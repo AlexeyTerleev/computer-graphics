@@ -4,9 +4,35 @@
   padding: 2rem;
   text-align: center;
 }
+.Wrapper {
+  height: 100vh;
+}
 
-.Canvas {
+.MainArea {
+  display: flex;
+  align-items: center;
+}
+
+.Svg {
   width: 500px;
   height: 500px;
   border: 1px dashed wheat;
+}
+
+.Menu {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.GridCell{
+  stroke: #ccc;
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 2
+}
+
+.PointList {
+  
 }
