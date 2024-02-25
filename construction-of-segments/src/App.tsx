@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import Point, {Color} from './pointInterface';
-import {digitalDifferentialAnalyzer, bresenhamAlgorithm, xiaolinWuAlgorithm} from "./algs"
+import React, { useEffect, useState } from 'react';
+import Point, {Color} from './interfaces/Point';
+import DrawingMode from './enums/DrawingMode';
+import LineAlgorithm from './enums/LineAlgorithm';
+
+import DrawingModePanel from './components/DrawingModePanel';
+import LineAlgorithmSelector from './components/LineAlgorithmSelector';
+import {digitalDifferentialAnalyzer, bresenhamAlgorithm, xiaolinWuAlgorithm} from "./utils/LineAlgs";
+import { circleAlg } from './utils/CircleAlgs';
 
 import './App.css';
 
@@ -9,8 +15,9 @@ const App: React.FC = () => {
   const [segmentEnds, setSegmentEnds] = useState<Point[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
   const [color, setColor] = useState<Color>({r: 255, g: 0, b: 0});
+  const [drawingMode, setDrawingMode] = useState<DrawingMode>(DrawingMode.Line);
 
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState("digitalDifferentialAnalyzer");
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState<LineAlgorithm>(LineAlgorithm.DDA);
   const [cellSize, setCellSize] = useState(25);
   const [showGrid, setShowGrid] = useState(false);
   const [debug, setDebug] = useState(false);
@@ -20,23 +27,27 @@ const App: React.FC = () => {
   const width = 500;
   const height = 500;
 
-  const handleAlgorithmChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = event.target.value;
-    setSelectedAlgorithm(selectedValue);
-  };
-
+  
   const handleRun = () => {
     setCouter(0);
     setDebugRunning(debug);
 
-    if (selectedAlgorithm === "digitalDifferentialAnalyzer") {
-      setPoints(digitalDifferentialAnalyzer(segmentEnds, color));
+    if (drawingMode === DrawingMode.Line) {
+      if (selectedAlgorithm === LineAlgorithm.DDA) {
+        setPoints(digitalDifferentialAnalyzer(segmentEnds, color));
+      }
+      else if (selectedAlgorithm === LineAlgorithm.Bresenham) {
+        setPoints(bresenhamAlgorithm(segmentEnds, color));
+      }
+      else if (selectedAlgorithm === LineAlgorithm.Wu) {
+        setPoints(xiaolinWuAlgorithm(segmentEnds, color));
+      }
     }
-    else if (selectedAlgorithm === "bresenhamAlgorithm") {
-      setPoints(bresenhamAlgorithm(segmentEnds, color));
+    else if (drawingMode === DrawingMode.Circle) {
+      setPoints(circleAlg(segmentEnds, color))
     }
-    else if (selectedAlgorithm === "xiaolinWuAlgorithm") {
-      setPoints(xiaolinWuAlgorithm(segmentEnds, color));
+    else if (drawingMode === DrawingMode.Ellipse) {
+      console.log("Ellipse")
     }
   }
 
@@ -54,6 +65,12 @@ const App: React.FC = () => {
     setSegmentEnds([]);
     setDebugRunning(false);
   }
+
+  useEffect( 
+    () => {
+      handleReset();
+    }, [drawingMode]
+  );
 
   const toggleGrid = () => {
     if (!showGrid && cellSize < 10) {
@@ -97,6 +114,7 @@ const App: React.FC = () => {
   return (
     <div className="Wrapper">
       <div className="MainArea">
+        <DrawingModePanel onSelectMode={setDrawingMode}/>
         <svg className="Svg" onClick={createSegment} xmlns="http://www.w3.org/2000/svg" width={width} height={height}>
           {showGrid && Array.from({ length: Math.ceil(width / cellSize) }).map((_, indexX) => (
             Array.from({ length: Math.ceil(height / cellSize) }).map((_, indexY) => (
@@ -128,14 +146,7 @@ const App: React.FC = () => {
           ))}
         </svg>
         <div className="Menu">
-          <div className="Input">
-            <label>Algorithm: </label>
-            <select value={selectedAlgorithm} onChange={handleAlgorithmChange}>
-              <option value="digitalDifferentialAnalyzer">Digital Differential Analyzer</option>
-              <option value="bresenhamAlgorithm">Bresenham Algorithm</option>
-              <option value="xiaolinWuAlgorithm">Wu Algorithm</option>
-            </select>
-          </div>
+          {drawingMode == DrawingMode.Line && <LineAlgorithmSelector selectedAlgorithm={selectedAlgorithm} setSelectedAlgorithm={setSelectedAlgorithm} />}
           <div className="Input">
             <label>Cell size: </label>
             <input type="text" value={cellSize} onChange={handleCellSizeChange} />

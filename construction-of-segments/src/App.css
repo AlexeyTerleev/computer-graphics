@@ -58,11 +58,6 @@
   display: flex;
 }
 
-button {
-  margin: auto;
-  margin-top: 10px;
-}
-
 .Buttons {
   display: flex;
   justify-content: center;
@@ -70,6 +65,8 @@ button {
 }
 .Buttons button {
   width: 40%;
+  margin: auto;
+  margin-top: 10px;
 }
 .Run {
   background-color: #50b628;
@@ -79,4 +76,14 @@ button {
 }
 .Reset{
   background-color: #df2626;
+}
+
+
+.drawing-mode-panel button {
+  width: 50px;
+  height: 50px;
+}
+
+.drawing-mode-panel img {
+
 }

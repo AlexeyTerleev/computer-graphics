@@ -1,4 +1,4 @@
-import Point, { Color } from "./pointInterface";
+import Point, { Color } from "../interfaces/Point";
 
 export const digitalDifferentialAnalyzer = (points: Point[], color: Color): Point[] =>  {
     if (points.length != 2) 
