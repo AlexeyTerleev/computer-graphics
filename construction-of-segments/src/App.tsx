@@ -7,6 +7,9 @@ import DrawingModePanel from './components/DrawingModePanel';
 import LineAlgorithmSelector from './components/LineAlgorithmSelector';
 import {digitalDifferentialAnalyzer, bresenhamAlgorithm, xiaolinWuAlgorithm} from "./utils/LineAlgs";
 import { circleAlg } from './utils/CircleAlgs';
+import { ellipseAlg } from './utils/EllipseAlgs';
+import { parabolaAlg } from './utils/ParabolaAlgs';
+import { hiperbolaAlg } from './utils/HiperbolaAlgs'
 
 import './App.css';
 
@@ -31,7 +34,6 @@ const App: React.FC = () => {
   const handleRun = () => {
     setCouter(0);
     setDebugRunning(debug);
-
     if (drawingMode === DrawingMode.Line) {
       if (selectedAlgorithm === LineAlgorithm.DDA) {
         setPoints(digitalDifferentialAnalyzer(segmentEnds, color));
@@ -44,10 +46,16 @@ const App: React.FC = () => {
       }
     }
     else if (drawingMode === DrawingMode.Circle) {
-      setPoints(circleAlg(segmentEnds, color))
+      setPoints(circleAlg(segmentEnds, color));
     }
     else if (drawingMode === DrawingMode.Ellipse) {
-      console.log("Ellipse")
+      setPoints(ellipseAlg(segmentEnds, color));
+    }
+    else if (drawingMode === DrawingMode.Parabola) {
+      setPoints(parabolaAlg(segmentEnds, color));
+    }
+    else if (drawingMode === DrawingMode.Hiperbola) {
+      setPoints(hiperbolaAlg(segmentEnds, color));
     }
   }
 

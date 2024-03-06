@@ -1,16 +1,19 @@
 import Point, { Color } from "../interfaces/Point";
+import { flipHorizontal, flipVertical } from "./Flip";
 
 export const circleAlg = (points: Point[], color: Color): Point[] =>  {
     if (points.length != 2) 
         return [];
 
-    const center = points[0];
-    const border = points[1];
+    const left_upper = points[0];
+    const right_lower = points[1];
 
-    const deltaX = Math.abs(center.x - border.x);
-    const deltaY = Math.abs(center.y - border.y);
+    const deltaX = Math.abs(left_upper.x - right_lower.x);
+    const deltaY = Math.abs(left_upper.y - right_lower.y);
 
-    const radius = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    const radius = Math.floor(Math.min(deltaX, deltaY) / 2);
+
+    const center: Point = {x: left_upper.x + radius, y: left_upper.y + radius, opacity: 1, color: color} 
 
     let currentX = 0;
     let currentY = radius;
@@ -29,7 +32,7 @@ export const circleAlg = (points: Point[], color: Color): Point[] =>  {
 
     const verticalMove = () => {
         currentY -= 1;
-        error = error - currentY + 1;
+        error = error - 2 * currentY + 1;
     }
 
     const newPoints = [];
@@ -47,5 +50,17 @@ export const circleAlg = (points: Point[], color: Color): Point[] =>  {
         diagonalMove();
       }
     }
-    return newPoints;
+    const half = newPoints.concat(flipHorizontal(newPoints, center.y));
+    const circle = half.concat(flipVertical(half, center.x));
+    
+    let result = circle;
+    if (left_upper.x > right_lower.x) {
+        result = flipVertical(result, left_upper.x);
+    }
+    if (left_upper.y > right_lower.y) {
+        result = flipHorizontal(result, left_upper.y);
+    }
+    return result;
 };
+
+

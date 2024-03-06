@@ -33,6 +33,18 @@ const DrawingModePanel: React.FC<DrawingModePanelProps> = ({ onSelectMode }) => 
       >
         <img src="/path/to/ellipse-icon.png" alt="Ellipse" />
       </button>
+      <button
+        className={activeMode === 'parabola' ? 'active' : ''}
+        onClick={() => handleModeChange(DrawingMode.Parabola)}
+      >
+        <img src="/path/to/parabola-icon.png" alt="Parabola" />
+      </button>
+      <button
+        className={activeMode === 'hiperbola' ? 'active' : ''}
+        onClick={() => handleModeChange(DrawingMode.Hiperbola)}
+      >
+        <img src="/path/to/parabola-icon.png" alt="Hiperbola" />
+      </button>
     </div>
   );
 };
