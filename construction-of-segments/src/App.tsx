@@ -5,13 +5,16 @@ import LineAlgorithm from './enums/LineAlgorithm';
 
 import DrawingModePanel from './components/DrawingModePanel';
 import LineAlgorithmSelector from './components/LineAlgorithmSelector';
+import CurveAlgorithmSelector from './components/CurveAlgorithmSelector';
 import {digitalDifferentialAnalyzer, bresenhamAlgorithm, xiaolinWuAlgorithm} from "./utils/LineAlgs";
 import { circleAlg } from './utils/CircleAlgs';
 import { ellipseAlg } from './utils/EllipseAlgs';
 import { parabolaAlg } from './utils/ParabolaAlgs';
-import { hiperbolaAlg } from './utils/HiperbolaAlgs'
+import { hiperbolaAlg } from './utils/HiperbolaAlgs';
+import { hermiteAlg, bezierAlg, bSplineAlg } from './utils/CurveAlgs';
 
 import './App.css';
+import CurveAlgorithm from './enums/CurveAlgorithm';
 
 
 const App: React.FC = () => {
@@ -21,6 +24,8 @@ const App: React.FC = () => {
   const [drawingMode, setDrawingMode] = useState<DrawingMode>(DrawingMode.Line);
 
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<LineAlgorithm>(LineAlgorithm.DDA);
+  const [selectedCurveAlgorithm, setSelectedCurveAlgorithm] = useState<CurveAlgorithm>(CurveAlgorithm.Hermite);
+
   const [cellSize, setCellSize] = useState(25);
   const [showGrid, setShowGrid] = useState(false);
   const [debug, setDebug] = useState(false);
@@ -56,6 +61,17 @@ const App: React.FC = () => {
     }
     else if (drawingMode === DrawingMode.Hiperbola) {
       setPoints(hiperbolaAlg(segmentEnds, color));
+    }
+    else if (drawingMode === DrawingMode.Curve) {
+      if (selectedCurveAlgorithm === CurveAlgorithm.Hermite) {
+        setPoints(hermiteAlg(segmentEnds, color));
+      }
+      else if (selectedCurveAlgorithm === CurveAlgorithm.Bezier) {
+        setPoints(bezierAlg(segmentEnds, color));
+      }
+      else if (selectedCurveAlgorithm === CurveAlgorithm.BSpline) {
+        setPoints(bSplineAlg(segmentEnds, color));
+      }
     }
   }
 
@@ -102,7 +118,7 @@ const App: React.FC = () => {
     const pt = svg.createSVGPoint();
     pt.x = event.clientX;
     pt.y = event.clientY;
-    const cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const cursorPt = pt.matrixTransform(svg.getScreenCTM()?.inverse());
 
     const point: Point = {
       x: Math.floor(cursorPt.x / cellSize), 
@@ -110,11 +126,12 @@ const App: React.FC = () => {
       opacity: 1,
       color: {r: 0, b: 0, g: 255},
     }
-
-    if (segmentEnds.length === 2) {
+    console.log(drawingMode);
+    if (drawingMode != DrawingMode.Curve && segmentEnds.length === 2) {
       handleReset();
       setSegmentEnds([point]);
-    } else {
+    }
+    else {
       setSegmentEnds([...segmentEnds, point]);
     }
   };
@@ -155,6 +172,7 @@ const App: React.FC = () => {
         </svg>
         <div className="Menu">
           {drawingMode == DrawingMode.Line && <LineAlgorithmSelector selectedAlgorithm={selectedAlgorithm} setSelectedAlgorithm={setSelectedAlgorithm} />}
+          {drawingMode == DrawingMode.Curve && <CurveAlgorithmSelector selectedAlgorithm={selectedCurveAlgorithm} setSelectedAlgorithm={setSelectedCurveAlgorithm} />}
           <div className="Input">
             <label>Cell size: </label>
             <input type="text" value={cellSize} onChange={handleCellSizeChange} />

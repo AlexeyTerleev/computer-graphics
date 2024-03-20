@@ -4,7 +4,8 @@ enum DrawingMode {
     Circle = 'circle',
     Ellipse = 'ellipse',
     Parabola = 'parabola',
-    Hiperbola = 'hiperbola'
+    Hiperbola = 'hiperbola',
+    Curve = 'curve'
 }
 
 export default DrawingMode;
