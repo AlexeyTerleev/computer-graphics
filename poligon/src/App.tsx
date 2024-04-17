@@ -190,6 +190,8 @@ const App: React.FC = () => {
 
   
   const drawPolygon = () => {
+    if (!vertices.length) 
+      return;
     const newLines: [Point, Point, Color][] = [];
     for (let i = 1; i < vertices.length; i++) {
       newLines.push([vertices[i - 1], vertices[i], red]);
@@ -229,7 +231,7 @@ const App: React.FC = () => {
             <button className="Run" onClick={checkConvexity}>Check Convexity</button>
             <button className="Run" onClick={computeConvexHullGraham}>Convex Hull Graham</button>
             <button className="Run" onClick={computeConvexHullJarvis}>Convex Hull Jarvis</button>
-            <button className="Run" onClick={handleNormalize}>Normalize</button>
+            <button className="Run" onClick={handleNormalize}>Normal</button>
             <button className="Reset" onClick={handleReset}>Reset</button>
           </div>
         </div>

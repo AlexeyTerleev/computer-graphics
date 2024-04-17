@@ -1,0 +1,91 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+.Wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.MainArea {
+  display: flex;
+  align-items: center;
+}
+
+.Svg {
+  width: 500px;
+  height: 500px;
+  border: 1px dashed wheat;
+}
+
+.Menu {
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #fff;
+  border-radius: 10px;
+}
+
+.Input{
+  width: 100%;
+  display: flex;
+  padding-bottom: 10px;
+}
+.Input label {
+  width: 100px;
+}
+
+
+.GridCell{
+  stroke: #ccc;
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 2
+}
+
+.debugCheckbox {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.debugSettings {
+  display: flex;
+}
+
+.Buttons {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.Buttons button {
+  margin: auto;
+  margin-top: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+.Run {
+  background-color: #50b628;
+}
+.Step{
+  background-color: #dfad26;
+}
+.Reset{
+  background-color: #df2626;
+}
+
+
+.drawing-mode-panel button {
+  width: 50px;
+  height: 50px;
+}
+
+.drawing-mode-panel img {
+
+} 
