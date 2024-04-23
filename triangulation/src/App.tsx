@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Delaunay } from 'd3-delaunay';
-
+import { Delaunay, Voronoi } from 'd3-delaunay'; // Import Voronoi
 import { Point, Color } from './interfaces';
-
 import './App.css';
 
 const App: React.FC = () => {
   const [vertices, setVertices] = useState<Point[]>([]);
-  const [triangles, setTriangles] = useState<number[][]>([]); // Array of indices for each triangle
+  const [triangles, setTriangles] = useState<Point[][]>([]); // Array of triangles with vertices represented as Point
+  const [voronoiCells, setVoronoiCells] = useState<number[][]>([]); // Array of Voronoi cell indices for each point
 
   const cellSize = 5;
   const width = 500;
   const height = 500;
 
-  const red: Color = { r: 255, g: 0, b: 0, opacity: 1 };
-  const green: Color = { r: 0, g: 255, b: 0, opacity: 1 };
   const yellow: Color = { r: 255, g: 255, b: 0, opacity: 1 };
+  const blue: Color = { r: 0, g: 0, b: 255, opacity: 1 };
+  const orange: Color = { r: 255, g: 165, b: 0, opacity: 1 }; 
+
+  const asString = (color: Color) => {
+    return`rgba(${color.r}, ${color.g}, ${color.b}, ${color.opacity})`;
+  }
 
   const createSegment = (event: React.MouseEvent<SVGSVGElement, MouseEvent>): void => {
     const svg = event.currentTarget;
@@ -27,36 +30,52 @@ const App: React.FC = () => {
       x: Math.floor(cursorPt.x / cellSize),
       y: Math.floor(cursorPt.y / cellSize),
       color: yellow,
-    }
+    };
     setVertices([...vertices, point]);
   };
 
   const handleReset = () => {
     setVertices([]);
     setTriangles([]);
-  }
+    setVoronoiCells([]);
+  };
 
   const handleDraw = () => {
     if (vertices.length > 2) {
-      // Perform Delaunay triangulation
-      const delaunay = Delaunay.from(vertices.map(point => [point.x * cellSize, point.y * cellSize]));
-      const triangulatedIndices = delaunay.triangles;
-      setTriangles(triangulatedIndices);
+      const delaunay = Delaunay.from(vertices.map(point => [point.x, point.y]));
+      const triangleIndices: Point[][] = Array.from(delaunay.trianglePolygons(), triangle =>
+        triangle.map(point => ({ x: point[0], y: point[1], color: yellow }))
+      );
+      setTriangles(triangleIndices);
+
+      // Compute Voronoi diagram
+      const voronoi = delaunay.voronoi([0, 0, width, height]);
+      const voronoiCells: number[][] = Array.from({ length: vertices.length }, (_, i) => voronoi.cellPolygon(i));
+      setVoronoiCells(voronoiCells);
     }
   };
-
+  
   return (
     <div className="Wrapper">
       <div className="MainArea">
         <svg className="Svg" onClick={createSegment} xmlns="http://www.w3.org/2000/svg" width={width} height={height}>
-          {triangles.map(triangle => (
+          {/* Render Voronoi cells */}
+          {voronoiCells.map((cell, index) => (
             <polygon
-              key={`${triangle[0]}-${triangle[1]}-${triangle[2]}`}
-              points={triangle.map(index => `${vertices[index].x * cellSize},${vertices[index].y * cellSize}`).join(' ')}
-              fill="none"
-              stroke="black"
+              key={`cell_${index}`}
+              points={cell.map((point) => `${point[0] * cellSize + cellSize / 2},${point[1] * cellSize + cellSize / 2}`).join(" ")}
+              stroke={asString(orange)} strokeWidth={cellSize} fill="none"
             />
           ))}
+          {/* Render triangles */}
+          {triangles.map((triangle, index) => (
+            <polygon
+              key={`triangle_${index}`}
+              points={triangle.map((point) => `${point.x * cellSize + cellSize / 2},${point.y * cellSize + cellSize / 2}`).join(" ")}
+              stroke={asString(blue)} strokeWidth={cellSize} fill="none"
+            />
+          ))}
+          {/* Render vertices */}
           {vertices.map((point, index) => (
             <rect
               key={`vertex_${index}`}
